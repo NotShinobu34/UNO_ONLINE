@@ -116,5 +116,5 @@ This project includes a production-ready `render.yaml` blueprint for zero-config
 
 ## 📜 License & Acknowledgements
 
-- Designed and developed by **Shinobu-34** &copy; 2026. All Rights Reserved.
+- Designed and developed by **NotShinobu34** &copy; 2026. All Rights Reserved.
 - UNO is a registered trademark of Mattel. This project is a non-commercial, educational fan implementation.
