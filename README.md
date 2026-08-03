@@ -75,7 +75,7 @@ Hosts can switch themes in real-time, instantly synchronizing the aesthetic acro
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Shinobu-34/UNO_ONLINE.git
+   git clone https://github.com/NotShinobu34/UNO_ONLINE.git
    cd UNO_ONLINE
    ```
 
