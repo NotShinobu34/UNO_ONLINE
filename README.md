@@ -110,7 +110,7 @@ This project includes a production-ready `render.yaml` blueprint for zero-config
    - **Start Command**: `node server.js`
 4. Access your live application instance instantly.
 
-**Live Production Instance**: [https://uno-online-oao9.onrender.com](https://uno-online-oao9.onrender.com)
+**Live Production Instance**: [https://uno-online-oao9.onrender.com](https://uno-online-oao9.onrender.com) this will take time to wake the server so kindly wait for 1 to 2 min at that time...
 
 ---
 
