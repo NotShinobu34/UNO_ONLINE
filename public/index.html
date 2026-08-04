@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Play UNO online with friends! Create a room, share the code, and enjoy the classic card game with 2-8 players.">
+  <title>UNO Online — Play with Friends</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>">
+</head>
+
+<body>
+
+  <!-- ═══ Particle Canvas Background ═══ -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ═══ HOME SCREEN ═══ -->
+  <div id="home-screen" class="screen active">
+    <div class="home-container">
+      <div class="logo-section">
+        <div class="uno-logo">
+          <span class="logo-u">U</span><span class="logo-n">N</span><span class="logo-o">O</span>
+        </div>
+        <p class="tagline">Play online with friends</p>
+      </div>
+
+      <div class="home-form glass-panel">
+        <div class="profile-setup-row">
+          <div class="avatar-group">
+            <label>Avatar</label>
+            <div class="avatar-preview-wrapper" id="avatar-preview-btn" title="Choose Profile Picture">
+              <div class="avatar-preview-img" id="avatar-preview-img">👦</div>
+              <div class="avatar-edit-badge">✏️</div>
+            </div>
+            <input type="file" id="pfp-upload-input" accept="image/*" style="display: none;">
+          </div>
+          
+          <div class="input-group name-input-group">
+            <label for="player-name-input">Your Name</label>
+            <div class="name-save-row">
+              <input type="text" id="player-name-input" placeholder="Enter your name" maxlength="20" autocomplete="off">
+              <button id="save-profile-btn" class="btn btn-secondary btn-save" title="Save Profile Details">💾 Save</button>
+            </div>
+          </div>
+        </div>        <button id="create-room-btn" class="btn btn-primary btn-lg">
+          <span class="btn-icon">✦</span> Create Room
+        </button>
+
+        <div class="divider"><span>or join a friend</span></div>
+
+        <div class="join-row">
+          <input type="text" id="room-code-input" placeholder="Room Code" maxlength="4" autocomplete="off"
+            class="code-input">
+          <button id="join-room-btn" class="btn btn-secondary">Join</button>
+        </div>
+      </div>
+      <div class="home-footer">
+        &copy; 2026 Shinobu-34. All Rights Reserved
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LOBBY SCREEN ═══ -->
+  <div id="lobby-screen" class="screen">
+      <div class="lobby-layout three-column">
+        <!-- Left Column: Actions -->
+        <div class="lobby-actions-column">
+          <div class="lobby-actions">
+            <button id="start-game-btn" class="btn btn-primary btn-lg" style="display:none;">
+              🎮 Start Game
+            </button>
+            <button id="leave-room-btn" class="btn btn-ghost">Leave Room</button>
+          </div>
+
+          <!-- Game Mode Selector Panel -->
+          <div class="lobby-mode-panel glass-panel" id="mode-panel">
+            <h3>Game Mode</h3>
+            <select id="game-mode-select" class="mode-select">
+              <option value="classic">Classic Mode</option>
+              <option value="nomercy">UNO Show 'em No Mercy</option>
+            </select>
+            <div class="mode-rules-box" id="mode-rules-box">
+              <h4>Rules Of This Mode</h4>
+              <ul id="mode-rules-list">
+                <li>Standard UNO deck (108 cards).</li>
+                <li>Match by color or number.</li>
+                <li>First to empty their hand wins!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Column: Lobby Info -->
+        <div class="lobby-center-column">
+          <div class="lobby-header glass-panel">
+            <h2>Room Code</h2>
+            <div class="room-code-display" id="lobby-room-code">ABCD</div>
+            <button id="copy-code-btn" class="btn btn-ghost btn-sm">📋 Copy Code</button>
+            <p class="lobby-hint">Share this code with your friends!</p>
+          </div>
+
+          <div class="players-list glass-panel scrollable-list" id="lobby-players">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      <!-- Right Column: Theme Selection -->
+      <div class="lobby-theme-panel glass-panel" id="theme-panel">
+        <h3>Game Theme</h3>
+        <p class="theme-hint" id="theme-hint">Only the host can change the theme.</p>
+        <div class="theme-grid" id="theme-grid">
+          <!-- Themes populated via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GAME SCREEN ═══ -->
+  <div id="game-screen" class="screen">
+    <!-- Game Header -->
+    <div class="game-header">
+      <div class="game-room-info">Room: <span id="game-room-code-val">ABCD</span></div>
+      <button id="game-leave-btn" class="btn btn-ghost btn-sm">🚪 Leave Game</button>
+    </div>
+
+    <!-- Dynamic 3D/2D Play Table Layout -->
+    <div class="table-area-wrapper">
+      <div class="uno-table">
+        <div class="table-inner-mat">
+          
+          <!-- Center table pile area -->
+          <div class="table-center">
+            <div class="pile-area">
+              <div class="draw-pile" id="draw-pile">
+                <div class="card-back">
+                  <div class="card-back-inner">UNO</div>
+                </div>
+                <span class="pile-count" id="draw-count">0</span>
+                <div class="pile-label">Draw Pile<br><span class="deck-sub">DECK</span></div>
+              </div>
+              <div class="discard-area">
+                <div id="discard-pile" class="discard-pile">
+                  <!-- Top card rendered here -->
+                </div>
+                <div class="current-color-ring" id="color-ring"></div>
+                <div class="pile-label">Discard Pile</div>
+              </div>
+            </div>
+            <div class="turn-label" id="turn-label">Your Turn!</div>
+          </div>
+
+          <!-- Direction indicator centered behind or inside mat -->
+          <div class="direction-indicator" id="direction-indicator">
+            <svg viewBox="0 0 60 60" class="direction-svg">
+              <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="2" opacity="0.3" />
+              <path id="direction-arrow" d="M 30 8 A 22 22 0 1 1 8 30" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" />
+              <polygon id="direction-head" points="5,22 8,30 14,24" fill="currentColor" />
+            </svg>
+          </div>
+
+        </div>
+
+        <!-- Opponent Slots distributed around the table mat -->
+        <div class="opponents-slots-container" id="opponents-bar">
+          <!-- Populated dynamically: left, top-left, top, top-right, right opponents -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Action log -->
+    <div class="action-log glass-panel" id="action-log">
+      <!-- Log entries -->
+    </div>
+
+    <!-- UNO + Catch buttons -->
+    <div class="floating-actions">
+      <button id="uno-btn" class="btn btn-uno" style="display:none;">UNO!</button>
+      <div id="catch-buttons"></div>
+    </div>
+
+    <!-- Drawn card prompt -->
+    <div id="drawn-card-prompt" class="drawn-prompt glass-panel" style="display:none;">
+      <p>You drew a playable card!</p>
+      <div class="drawn-card-preview" id="drawn-card-preview"></div>
+      <div class="drawn-actions">
+        <button id="play-drawn-btn" class="btn btn-primary btn-sm">Play It</button>
+        <button id="keep-drawn-btn" class="btn btn-ghost btn-sm">Keep It</button>
+      </div>
+    </div>
+
+    <!-- You / Bottom Player HUD -->
+    <div class="player-hud">
+      <div class="player-hud-info">
+        <div class="hud-avatar" id="my-hud-avatar">🤖</div>
+        <div class="hud-meta">
+          <span class="hud-name">You</span>
+          <span class="hud-score" id="my-hud-score">Score: 0</span>
+        </div>
+      </div>
+      <div class="hand-area">
+        <div class="hand-scroll" id="player-hand">
+          <!-- Cards rendered here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GAME START OVERLAY ═══ -->
+  <div id="game-start-overlay" class="modal-overlay" style="display:none; z-index: 9999;">
+    <div class="game-start-modal glass-panel">
+      <h1 class="start-title">Game Starts!</h1>
+      <p class="start-countdown" id="start-countdown-text">Closing in 3...</p>
+      <button id="close-start-popup-btn" class="btn btn-secondary" style="margin-top: 10px;">Close Now</button>
+    </div>
+  </div>
+
+  <!-- ═══ COLOR PICKER MODAL ═══ -->
+  <div id="color-modal" class="modal-overlay" style="display:none;">
+    <div class="color-modal glass-panel">
+      <h3>Choose a Color</h3>
+      <div class="color-choices">
+        <button class="color-btn color-red" data-color="red"></button>
+        <button class="color-btn color-blue" data-color="blue"></button>
+        <button class="color-btn color-green" data-color="green"></button>
+        <button class="color-btn color-yellow" data-color="yellow"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PENALTY ALERT MODAL ═══ -->
+  <div id="penalty-modal" class="modal-overlay" style="display:none;">
+    <div class="challenge-modal glass-panel">
+      <div class="modal-badge-warn">🚨 Penalty Alert</div>
+      <h3 id="penalty-modal-title">Draw Penalty (+X)</h3>
+      <p id="penalty-modal-desc">A penalty card has been played against you!</p>
+
+      <div class="challenge-info-box">
+        <div class="info-item">
+          <strong>💥 Stack:</strong> Play a matching penalty card to pass the total penalty to the next player!
+        </div>
+        <div class="info-item">
+          <strong>💤 Decline:</strong> You draw the penalty cards and lose your turn.
+        </div>
+      </div>
+
+      <div class="challenge-timer" id="penalty-timer">10s</div>
+
+      <div class="challenge-actions">
+        <button id="penalty-stack-btn" class="btn" style="display: none; background: linear-gradient(135deg, #a855f7, #7e22ce); color: white; border: none; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);">💥 Stack</button>
+        <button id="penalty-draw-btn" class="btn btn-secondary">Decline (Draw)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CUSTOM CONFIRMATION MODAL ═══ -->
+  <div id="confirm-modal" class="modal-overlay" style="display:none;">
+    <div class="confirm-modal glass-panel">
+      <h3 id="confirm-modal-title">Are you sure?</h3>
+      <p id="confirm-modal-desc">This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button id="confirm-yes-btn" class="btn btn-primary">Yes, Proceed</button>
+        <button id="confirm-no-btn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VICTORY SCREEN ═══ -->
+  <div id="victory-screen" class="screen">
+    <div class="victory-container">
+      <div class="confetti-wrapper" id="confetti-wrapper"></div>
+      <div class="victory-content glass-panel">
+        <div class="trophy">🏆</div>
+        <h1 id="winner-name">Player Wins!</h1>
+        <p class="winner-score" id="winner-score">Score: 0</p>
+        <div class="victory-actions">
+          <button id="play-again-btn" class="btn btn-primary btn-lg">🔄 Play Again</button>
+          <button id="leave-game-btn" class="btn btn-ghost">Leave</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CROP PROFILE PICTURE MODAL ═══ -->
+  <div id="crop-modal" class="modal-overlay" style="display:none;">
+    <div class="crop-modal glass-panel">
+      <h3>Crop Profile Picture</h3>
+      <p class="crop-hint">Drag to position, use slider to zoom</p>
+      
+      <div class="crop-viewport-container">
+        <canvas id="crop-canvas" width="300" height="300"></canvas>
+        <div class="crop-circle-overlay"></div>
+      </div>
+      
+      <div class="crop-zoom-group">
+        <span>🔎</span>
+        <input type="range" id="crop-zoom-slider" min="1" max="3" step="0.01" value="1">
+      </div>
+      
+      <div class="crop-actions">
+        <button id="crop-cancel-btn" class="btn btn-secondary btn-sm">Cancel</button>
+        <button id="crop-save-btn" class="btn btn-primary btn-sm">Save Crop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SWAP HANDS MODAL (No Mercy 7-Card) ═══ -->
+  <div id="swap-modal" class="modal-overlay" style="display:none;">
+    <div class="modal glass-panel swap-modal-content">
+      <h3>🔄 Swap Hands!</h3>
+      <p>You played a 7! Choose an opponent to swap hands with:</p>
+      <div id="swap-targets-list" class="swap-targets-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══ TOAST NOTIFICATIONS ═══ -->
+  <div id="toast-container"></div>
+
+  <script src="cards.js?v=2"></script>
+  <script src="network.js?v=2"></script>
+  <script src="app.js?v=8"></script>
+</body>
+
+</html>
